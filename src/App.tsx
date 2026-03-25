@@ -9,21 +9,26 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [income, setIncome] = useState<number | string>('');
+  const [selectedDivisor, setSelectedDivisor] = useState<number>(16);
 
   const monthlyIncome = typeof income === 'number' ? income : parseFloat(income) || 0;
 
-  const chandaAam = monthlyIncome / 16;
+  const selectedChanda = monthlyIncome / selectedDivisor;
   const jalsaChanda = monthlyIncome / 10;
 
-  const hissaAmadOptions = [
-    { label: '১/১০ অংশ', divisor: 10 },
-    { label: '১/৯ অংশ', divisor: 9 },
-    { label: '১/৮ অংশ', divisor: 8 },
-    { label: '১/৭ অংশ', divisor: 7 },
-    { label: '১/৬ অংশ', divisor: 6 },
-    { label: '১/৫ অংশ', divisor: 5 },
-    { label: '১/৪ অংশ', divisor: 4 },
-    { label: '১/৩ অংশ', divisor: 3 },
+  const totalMonthly = selectedChanda;
+  const totalYearly = (totalMonthly * 12) + jalsaChanda;
+
+  const chandaOptions = [
+    { label: 'চাদা আম (১/১৬)', divisor: 16 },
+    { label: 'হিসসা আমদ (১/১০)', divisor: 10 },
+    { label: 'হিসসা আমদ (১/৯)', divisor: 9 },
+    { label: 'হিসসা আমদ (১/৮)', divisor: 8 },
+    { label: 'হিসসা আমদ (১/৭)', divisor: 7 },
+    { label: 'হিসসা আমদ (১/৬)', divisor: 6 },
+    { label: 'হিসসা আমদ (১/৫)', divisor: 5 },
+    { label: 'হিসসা আমদ (১/৪)', divisor: 4 },
+    { label: 'হিসসা আমদ (১/৩)', divisor: 3 },
   ];
 
   const formatNumber = (num: number) => {
@@ -114,9 +119,9 @@ export default function App() {
                         <div className="p-2 bg-green-50 rounded-lg">
                           <Landmark className="w-5 h-5 text-green-600" />
                         </div>
-                        <h3 className="font-semibold text-gray-700">চাদা আম (১/১৬)</h3>
+                        <h3 className="font-semibold text-gray-700">চাদা আমদ/ হিসসা আমদ</h3>
                       </div>
-                      <p className="text-3xl font-bold text-green-600">৳ {formatNumber(chandaAam)}</p>
+                      <p className="text-3xl font-bold text-green-600">৳ {formatNumber(selectedChanda)}</p>
                       <p className="text-xs text-gray-400 mt-2 uppercase tracking-widest">মাসিক প্রদেয়</p>
                     </div>
 
@@ -132,31 +137,41 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Hissa Amad Section */}
-                  <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="p-6 border-bottom border-gray-50 bg-gray-50/50">
-                      <div className="flex items-center gap-3">
-                        <TrendingUp className="w-5 h-5 text-blue-600" />
-                        <h3 className="font-bold text-gray-800">হিসসা আমদ (বিকল্পসমূহ)</h3>
+                  {/* Dropdown Section */}
+                  <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <label htmlFor="chanda-type" className="block text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                      চাদা আমদ/ হিসসা আমদ অংশ
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="chanda-type"
+                        value={selectedDivisor}
+                        onChange={(e) => setSelectedDivisor(parseInt(e.target.value))}
+                        className="w-full px-4 py-4 bg-gray-50 border-none rounded-2xl text-xl font-bold focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer"
+                      >
+                        {chandaOptions.map((option) => (
+                          <option key={option.divisor} value={option.divisor}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <TrendingUp className="w-6 h-6 text-gray-400" />
                       </div>
                     </div>
-                    <div className="divide-y divide-gray-50">
-                      {hissaAmadOptions.map((option, idx) => (
-                        <motion.div 
-                          key={option.divisor}
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * idx }}
-                          className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors group"
-                        >
-                          <span className="text-gray-600 font-medium">{option.label}</span>
-                          <div className="text-right">
-                            <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                              ৳ {formatNumber(monthlyIncome / option.divisor)}
-                            </span>
-                          </div>
-                        </motion.div>
-                      ))}
+                  </div>
+
+                  {/* Totals Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-blue-600 p-6 rounded-3xl shadow-lg shadow-blue-100 text-white">
+                      <h3 className="text-sm font-semibold opacity-80 uppercase tracking-wider mb-2">মোট মাসিক চাদা</h3>
+                      <p className="text-3xl font-bold">৳ {formatNumber(totalMonthly)}</p>
+                      <p className="text-[10px] mt-2 opacity-60 italic">নির্বাচিত চাদার পরিমাণ</p>
+                    </div>
+                    <div className="bg-indigo-600 p-6 rounded-3xl shadow-lg shadow-indigo-100 text-white">
+                      <h3 className="text-sm font-semibold opacity-80 uppercase tracking-wider mb-2">মোট বার্ষিক চাদা</h3>
+                      <p className="text-3xl font-bold">৳ {formatNumber(totalYearly)}</p>
+                      <p className="text-[10px] mt-2 opacity-60 italic">(মাসিক × ১২) + জলসা চাদা</p>
                     </div>
                   </div>
                 </motion.div>
