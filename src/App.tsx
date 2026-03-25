@@ -1,0 +1,189 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState } from 'react';
+import { Calculator, Info, Landmark, Calendar, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export default function App() {
+  const [income, setIncome] = useState<number | string>('');
+
+  const monthlyIncome = typeof income === 'number' ? income : parseFloat(income) || 0;
+
+  const chandaAam = monthlyIncome / 16;
+  const jalsaChanda = monthlyIncome / 10;
+
+  const hissaAmadOptions = [
+    { label: '১/১০ অংশ', divisor: 10 },
+    { label: '১/৯ অংশ', divisor: 9 },
+    { label: '১/৮ অংশ', divisor: 8 },
+    { label: '১/৭ অংশ', divisor: 7 },
+    { label: '১/৬ অংশ', divisor: 6 },
+    { label: '১/৫ অংশ', divisor: 5 },
+    { label: '১/৪ অংশ', divisor: 4 },
+    { label: '১/৩ অংশ', divisor: 3 },
+  ];
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('bn-BD', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8f9fa] text-[#1a1a1a] font-sans selection:bg-blue-100">
+      <div className="max-w-4xl mx-auto px-4 py-12 md:py-20">
+        {/* Header */}
+        <header className="mb-12 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6 shadow-lg shadow-blue-200"
+          >
+            <Calculator className="w-8 h-8 text-white" />
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold tracking-tight mb-4"
+          >
+            চাদা ক্যালকুলেটর
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-gray-500 text-lg max-w-md mx-auto"
+          >
+            আপনার মাসিক আয়ের ভিত্তিতে চাদার পরিমাণ সহজে গণনা করুন।
+          </motion.p>
+        </header>
+
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Input Section */}
+          <section className="lg:col-span-5">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+              className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 sticky top-8"
+            >
+              <label htmlFor="income" className="block text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                মাসিক আয় (টাকা)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-medium text-gray-400">৳</span>
+                <input
+                  id="income"
+                  type="number"
+                  placeholder="আপনার আয় লিখুন"
+                  value={income}
+                  onChange={(e) => setIncome(e.target.value)}
+                  className="w-full pl-10 pr-4 py-5 bg-gray-50 border-none rounded-2xl text-3xl font-bold focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-gray-300"
+                />
+              </div>
+              
+              <div className="mt-8 p-4 bg-blue-50 rounded-2xl flex gap-4 items-start">
+                <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-blue-800 leading-relaxed">
+                  সঠিক হিসাবের জন্য আপনার মোট মাসিক আয় প্রদান করুন। এটি আপনার চাদা আম এবং হিসসা আমদ নির্ধারণে সাহায্য করবে।
+                </p>
+              </div>
+            </motion.div>
+          </section>
+
+          {/* Results Section */}
+          <section className="lg:col-span-7 space-y-6">
+            <AnimatePresence mode="wait">
+              {monthlyIncome > 0 ? (
+                <motion.div
+                  key="results"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="space-y-6"
+                >
+                  {/* Primary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-green-50 rounded-lg">
+                          <Landmark className="w-5 h-5 text-green-600" />
+                        </div>
+                        <h3 className="font-semibold text-gray-700">চাদা আম (১/১৬)</h3>
+                      </div>
+                      <p className="text-3xl font-bold text-green-600">৳ {formatNumber(chandaAam)}</p>
+                      <p className="text-xs text-gray-400 mt-2 uppercase tracking-widest">মাসিক প্রদেয়</p>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-purple-50 rounded-lg">
+                          <Calendar className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <h3 className="font-semibold text-gray-700">জলসা চাদা (১/১০)</h3>
+                      </div>
+                      <p className="text-3xl font-bold text-purple-600">৳ {formatNumber(jalsaChanda)}</p>
+                      <p className="text-xs text-gray-400 mt-2 uppercase tracking-widest">বার্ষিক একবার</p>
+                    </div>
+                  </div>
+
+                  {/* Hissa Amad Section */}
+                  <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div className="p-6 border-bottom border-gray-50 bg-gray-50/50">
+                      <div className="flex items-center gap-3">
+                        <TrendingUp className="w-5 h-5 text-blue-600" />
+                        <h3 className="font-bold text-gray-800">হিসসা আমদ (বিকল্পসমূহ)</h3>
+                      </div>
+                    </div>
+                    <div className="divide-y divide-gray-50">
+                      {hissaAmadOptions.map((option, idx) => (
+                        <motion.div 
+                          key={option.divisor}
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * idx }}
+                          className="p-4 flex justify-between items-center hover:bg-gray-50 transition-colors group"
+                        >
+                          <span className="text-gray-600 font-medium">{option.label}</span>
+                          <div className="text-right">
+                            <span className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                              ৳ {formatNumber(monthlyIncome / option.divisor)}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="bg-white p-12 rounded-3xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center"
+                >
+                  <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                    <Calculator className="w-10 h-10 text-gray-300" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-400 mb-2">ফলাফল দেখতে আয় লিখুন</h3>
+                  <p className="text-gray-300 max-w-xs">
+                    বাম দিকের বক্সে আপনার মাসিক আয় লিখলে এখানে বিস্তারিত হিসাব দেখা যাবে।
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
+        </main>
+
+        <footer className="mt-20 pt-8 border-t border-gray-100 text-center text-gray-400 text-sm">
+          <p>© {new Date().getFullYear()} চাদা ক্যালকুলেটর • আপনার সেবায় নিয়োজিত</p>
+        </footer>
+      </div>
+    </div>
+  );
+}
